@@ -68,23 +68,31 @@ def read_image(path: PathLike) -> np.ndarray | None:
     return cv2.imdecode(data, cv2.IMREAD_COLOR)
 
 
+def check_output_path(path: PathLike) -> Path:
+    """Make sure an image can be saved at ``path``: known extension, existing folder."""
+    path = Path(path)
+    if not path.suffix:
+        raise FaceWallError(f"cannot tell the image format of {path}: add an extension like .jpg")
+    if not cv2.haveImageWriter(path.name):
+        raise FaceWallError(f"OpenCV cannot save {path.suffix} files; use .jpg or .png")
+    if not path.parent.is_dir():
+        raise FaceWallError(f"output folder does not exist: {path.parent}")
+    return path
+
+
 def write_image(path: PathLike, image: np.ndarray) -> Path:
     """Save ``image`` to ``path``; the extension picks the format (``.jpg``, ``.png``, ...).
 
     Encodes in memory and writes the bytes ourselves, for the same non-ASCII path reason as
     :func:`read_image`, and so that a failed write raises instead of passing silently.
     """
-    path = Path(path)
-    if not path.suffix:
-        raise FaceWallError(f"cannot tell the image format of {path}: add an extension like .jpg")
-    if not path.parent.is_dir():
-        raise FaceWallError(f"output folder does not exist: {path.parent}")
+    path = check_output_path(path)
     try:
         ok, encoded = cv2.imencode(path.suffix, image)
     except cv2.error:
         ok = False
     if not ok:
-        raise FaceWallError(f"OpenCV cannot save {path.suffix} files; use .jpg or .png")
+        raise FaceWallError(f"OpenCV could not encode the image as {path.suffix}")
     try:
         encoded.tofile(os.fspath(path))
     except OSError as exc:
@@ -192,8 +200,10 @@ def generate_face_wall(
     """
     _check_count("columns (x)", x)
     _check_count("rows (y)", y)
+    check_output_path(save_path)  # fail before the slow part, not after it
     tiles = load_faces(faces, size, crop_faces=crop_faces)
     wall = build_wall(tiles, x, y, seed)
     path = write_image(save_path, wall)
-    logger.info("saved a %d x %d wall (%d x %d px) to %s", x, y, wall.shape[1], wall.shape[0], path)
+    height, width = wall.shape[:2]
+    logger.info("saved a wall of %d x %d faces (%d x %d px) to %s", x, y, width, height, path)
     return path

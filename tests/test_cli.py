@@ -58,7 +58,7 @@ def test_reports_progress_on_stderr(in_project: Path, capsys) -> None:
     assert main(["5", "6"]) == 0
     err = capsys.readouterr().err
     assert "face-wall: loaded 3 faces from ./faces" in err
-    assert "face-wall: saved a 5 x 6 wall (360 x 432 px) to wall.jpg" in err
+    assert "face-wall: saved a wall of 5 x 6 faces (360 x 432 px) to wall.jpg" in err
 
 
 @pytest.mark.parametrize(
@@ -132,3 +132,10 @@ def test_main_py_keeps_the_old_python_names(face_dir: Path, tmp_path: Path) -> N
     assert len(old_main.get_faces(str(face_dir))) == 3
     old_main.generate_face_wall(2, 1, str(tmp_path / "old.jpg"), faces=face_dir)
     assert read_image(tmp_path / "old.jpg").shape == (72, 144, 3)
+
+
+def test_a_bad_output_path_is_reported_before_reading_any_face(in_project: Path, capsys) -> None:
+    assert main(["5", "6", "wall.txt"]) == 1
+    err = capsys.readouterr().err
+    assert "face-wall: error: OpenCV cannot save .txt files" in err
+    assert "loaded" not in err
