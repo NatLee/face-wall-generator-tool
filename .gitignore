@@ -1,9 +1,19 @@
+# Walls generated while trying the tool from the repo root (the default output is ./wall.jpg)
+/*.jpg
+/*.jpeg
+/*.png
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# OS / editor
 .DS_Store
-
 desktop.ini
-
 .vscode
-
-__pycache__
-
-*.jpg

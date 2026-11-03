@@ -1,0 +1,83 @@
+<!doctype html>
+<!--
+  Social preview / README cover, 1280 x 640.
+  Background: real output of `face-wall 16 8 docs/images/cover-wall.jpg --seed 2026 --size 80`,
+  re-saved with `magick cover-wall.jpg -strip -quality 82 cover-wall.jpg` to keep the repo small.
+  Render: msedge --headless=new --disable-gpu --hide-scrollbars --window-size=1280,640
+          --screenshot=cover-raw.png file:///.../docs/images/cover.html
+  Shrink: magick cover-raw.png -dither FloydSteinberg -colors 256 -strip PNG8:cover.png
+          (keeps it under 400 KB)
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>face-wall cover</title>
+<style>
+  :root {
+    --ink: #f4f6fb;
+    --muted: #b9c2d6;
+    --accent: #3ddc97;
+    --night: 8, 12, 22;
+  }
+  html, body { margin: 0; width: 1280px; height: 640px; overflow: hidden; background: #080c16; }
+  .wall {
+    position: absolute; inset: 0;
+    background: url("cover-wall.jpg") 0 0 / 1280px 640px no-repeat;
+  }
+  .shade {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg,
+      rgba(var(--night), 0.94) 0%,
+      rgba(var(--night), 0.90) 38%,
+      rgba(var(--night), 0.55) 55%,
+      rgba(var(--night), 0.05) 72%);
+  }
+  /* Tile outlines on the right: every tile is a face at a known place. */
+  .boxes { position: absolute; inset: 0; }
+  .boxes rect { fill: none; stroke: var(--accent); stroke-width: 3; }
+  .text {
+    position: absolute; left: 72px; top: 0; bottom: 0; width: 640px;
+    display: flex; flex-direction: column; justify-content: center; gap: 26px;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: var(--ink);
+  }
+  h1 {
+    margin: 0; font-size: 128px; line-height: 0.95; font-weight: 800; letter-spacing: -3px;
+  }
+  h1 span { color: var(--accent); }
+  p { margin: 0; font-size: 38px; line-height: 1.25; font-weight: 600; color: var(--ink); }
+  p.sub { font-size: 26px; font-weight: 400; color: var(--muted); }
+  code {
+    align-self: flex-start;
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace; font-size: 26px;
+    color: var(--ink); background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.18); border-radius: 12px; padding: 12px 20px;
+  }
+  code b { color: var(--accent); font-weight: 400; }
+</style>
+</head>
+<body>
+  <div class="wall"></div>
+  <div class="shade"></div>
+  <svg class="boxes" width="1280" height="640" viewBox="0 0 1280 640" aria-hidden="true">
+    <!-- columns 12-15, rows 1-6 (0-based), inset 4 px inside each 80 px tile -->
+    <rect x="964" y="84" width="72" height="72"/><rect x="1044" y="84" width="72" height="72"/>
+    <rect x="1124" y="84" width="72" height="72"/><rect x="1204" y="84" width="72" height="72"/>
+    <rect x="964" y="164" width="72" height="72"/><rect x="1044" y="164" width="72" height="72"/>
+    <rect x="1124" y="164" width="72" height="72"/><rect x="1204" y="164" width="72" height="72"/>
+    <rect x="964" y="244" width="72" height="72"/><rect x="1044" y="244" width="72" height="72"/>
+    <rect x="1124" y="244" width="72" height="72"/><rect x="1204" y="244" width="72" height="72"/>
+    <rect x="964" y="324" width="72" height="72"/><rect x="1044" y="324" width="72" height="72"/>
+    <rect x="1124" y="324" width="72" height="72"/><rect x="1204" y="324" width="72" height="72"/>
+    <rect x="964" y="404" width="72" height="72"/><rect x="1044" y="404" width="72" height="72"/>
+    <rect x="1124" y="404" width="72" height="72"/><rect x="1204" y="404" width="72" height="72"/>
+    <rect x="964" y="484" width="72" height="72"/><rect x="1044" y="484" width="72" height="72"/>
+    <rect x="1124" y="484" width="72" height="72"/><rect x="1204" y="484" width="72" height="72"/>
+  </svg>
+  <div class="text">
+    <h1>face<span>-</span>wall</h1>
+    <p>Tile faces into a grid.<br>Test your face detector.</p>
+    <p class="sub">A known number of faces, in known places.</p>
+    <code><b>$</b> face-wall 16 8 --seed 2026</code>
+  </div>
+</body>
+</html>

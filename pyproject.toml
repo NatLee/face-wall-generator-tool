@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "face-wall-generator-tool"
+dynamic = ["version"]
+description = "Tile face images into a grid (a face wall) to test face detection and recognition models."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+authors = [{ name = "Nat Lee" }]
+keywords = ["face", "face-detection", "face-recognition", "test-data", "opencv", "yunet"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+]
+# 4.10 is the first OpenCV wheel built for NumPy 2; the headless build needs no GUI libraries.
+dependencies = ["numpy", "opencv-python-headless>=4.10"]
+
+[project.scripts]
+face-wall = "face_wall.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/NatLee/face-wall-generator-tool"
+Issues = "https://github.com/NatLee/face-wall-generator-tool/issues"
+
+[dependency-groups]
+test = ["pytest>=8"]
+lint = ["ruff>=0.14"]
+
+[tool.hatch.version]
+path = "face_wall/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["face_wall"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
