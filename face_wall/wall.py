@@ -12,6 +12,8 @@ from typing import Union
 import cv2
 import numpy as np
 
+from .faces import FaceCropper
+
 logger = logging.getLogger(__name__)
 
 PathLike = Union[str, os.PathLike[str]]
@@ -113,22 +115,37 @@ def load_faces(
     size: TileSize = DEFAULT_TILE_SIZE,
     *,
     extensions: Iterable[str] = IMAGE_EXTENSIONS,
+    crop_faces: bool = False,
 ) -> list[np.ndarray]:
     """Read every image in ``folder`` and resize it to one tile.
 
-    Unreadable files are skipped with a warning.
+    Unreadable files are skipped with a warning. With ``crop_faces`` each image is first
+    cropped around its largest face (see :class:`face_wall.faces.FaceCropper`), and images
+    without a face are skipped too.
     """
     tile_size = normalize_tile_size(size)
+    cropper = FaceCropper() if crop_faces else None
     tiles = []
     for path in find_images(folder, extensions):
         image = read_image(path)
         if image is None:
             logger.warning("skipped %s: not a readable image", path.name)
             continue
+        if cropper is not None:
+            image = cropper.crop(image, aspect=tile_size[0] / tile_size[1])
+            if image is None:
+                logger.warning("skipped %s: no face found", path.name)
+                continue
         tiles.append(resize_to_tile(image, tile_size))
     if not tiles:
         raise FaceWallError(f"none of the images in {folder} could be used")
-    logger.info("loaded %d face%s from %s", len(tiles), "" if len(tiles) == 1 else "s", folder)
+    logger.info(
+        "loaded %d face%s from %s%s",
+        len(tiles),
+        "" if len(tiles) == 1 else "s",
+        folder,
+        " (cropped to the face)" if crop_faces else "",
+    )
     return tiles
 
 
@@ -167,6 +184,7 @@ def generate_face_wall(
     faces: PathLike = DEFAULT_FACE_FOLDER,
     size: TileSize = DEFAULT_TILE_SIZE,
     seed: int | None = None,
+    crop_faces: bool = False,
 ) -> Path:
     """Build a wall of ``x`` columns by ``y`` rows from the images in ``faces`` and save it.
 
@@ -174,7 +192,7 @@ def generate_face_wall(
     """
     _check_count("columns (x)", x)
     _check_count("rows (y)", y)
-    tiles = load_faces(faces, size)
+    tiles = load_faces(faces, size, crop_faces=crop_faces)
     wall = build_wall(tiles, x, y, seed)
     path = write_image(save_path, wall)
     logger.info("saved a %d x %d wall (%d x %d px) to %s", x, y, wall.shape[1], wall.shape[0], path)

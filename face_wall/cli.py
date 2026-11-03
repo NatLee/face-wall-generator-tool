@@ -34,6 +34,8 @@ examples:
       the same wall every time, saved as PNG in ./out (the folder must exist)
   {PROG} 12 4 --size 96x128
       taller tiles (width x height)
+  {PROG} 6 2 --faces photos --crop-faces
+      crop each photo around its face first
 
 The old python-fire spellings still work: -x 8 -y 6 -save_path wall.jpg, --x=8, --save-path.
 """
@@ -102,6 +104,12 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="N",
         help="random seed; the same seed and faces always give the same wall (default: random)",
     )
+    parser.add_argument(
+        "--crop-faces",
+        action="store_true",
+        help="find the largest face in each image (YuNet detector) and crop around it; "
+        "images without a face are skipped",
+    )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     return parser
 
@@ -169,6 +177,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 faces=args.faces,
                 size=args.size,
                 seed=args.seed,
+                crop_faces=args.crop_faces,
             )
         except FaceWallError as exc:
             logging.getLogger(__package__).error("%s", exc)

@@ -99,7 +99,7 @@ def test_help_lists_options_and_examples(capsys) -> None:
         main(["--help"])
     assert exit_info.value.code == 0
     out = capsys.readouterr().out
-    for text in ["X Y [SAVE_PATH]", "--seed", "--size", "examples:"]:
+    for text in ["X Y [SAVE_PATH]", "--crop-faces", "--seed", "--size", "examples:"]:
         assert text in out
 
 
