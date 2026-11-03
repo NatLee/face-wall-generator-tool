@@ -14,7 +14,7 @@ from .wall import (
     write_image,
 )
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 
 __all__ = [
     "DEFAULT_FACE_FOLDER",
