@@ -30,11 +30,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # A fixed image, not ubuntu-latest: setup-python only has each Python for the images that were
+        # current while that Python was supported, and ubuntu-latest moved to 26.04 in October 2026,
+        # which has no 3.8 or 3.9. Move this on when GitHub retires 24.04.
         include:
           # Oldest supported Python with the oldest supported OpenCV (first one built for NumPy 2).
-          - { os: ubuntu-latest, python: "3.9", opencv: "4.10.0.84" }
-          - { os: ubuntu-latest, python: "3.12" }
-          - { os: ubuntu-latest, python: "3.15" }
+          - { os: ubuntu-24.04, python: "3.9", opencv: "4.10.0.84" }
+          - { os: ubuntu-24.04, python: "3.12" }
+          - { os: ubuntu-24.04, python: "3.15" }
           # Windows is where OpenCV's own file functions break on non-ASCII paths.
           - { os: windows-latest, python: "3.15" }
     steps:
